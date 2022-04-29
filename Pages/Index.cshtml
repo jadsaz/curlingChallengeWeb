@@ -1,0 +1,283 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<div  id="errorSpanId" class="spanError" >1</div>
+<div class="form">
+    <form>
+        <input placeholder="Number of Disks" type="text" name="disksNumber"   value="4" class="mainInput integerValues"/>
+        <input placeholder="radius of the disks" type="text" name="diskRadius"  value="2" class="mainInput flotValues"/>
+        <input type="submit" value="Create" />
+        <input type="reset" id="btnRest" value="Reset" />
+    </form>
+</div>
+<div class="gallery">
+ 
+    <div id="disksContainer" class="container">
+ 
+    </div>
+    <button class="visualization"  id="cmdGo" >Visualization  ..... </button>
+</div>
+<div class="visualArea">
+    <div class="container" id="visualAreaId">
+  
+    </div>
+</div>
+<script type="text/javascript">
+//Global 
+    let diskNumber; //Initial number of Disks
+    let diskContainer= document.getElementById('disksContainer'); // Div for disks values 
+    let visualAreaidd= document.getElementById('visualAreaId'); // Div for visualize area
+    let disksObj= new Set();    //ES6 provides a native Set:
+
+    // Javascript OOP define class with static property and methods and getter and setter 
+    //THis object represent Disk with all property and Methods 
+    // x, y : coordinates disk center , x is input => y computing  
+    //r disk radius 
+    //no is number of disk 
+    class Disk {
+        x; y; r;
+        #no;
+        static diskNo=0;
+        constructor (x) {
+            this.x=x;
+            Disk.diskNo ++;
+            this.#no=Disk.diskNo;
+           
+        }
+        setXandR(x,r){
+            this.x=x;
+            this.r=r;
+        }
+         setY(y){
+            this.y=y;
+        }
+        locatedThisDisk () {
+            if (this.#no=1){
+                this.y=this.r
+            }
+                let tempY = 0;
+                disk.style.left =this.x +'px';
+                timer = setInterval(function() {
+                         tempY =tempY + 50;
+                        disk.style.top =tempY +'px';
+                            if ( tempY >= this.y ) {
+                                clearInterval( timer );
+                            }
+                    }, 100);
+        } 
+        getThisDiskNO () {  //this getter becuase no private and not accessible out side class
+            return this.#no; 
+        }
+         getX () {
+            return this.x; 
+        }
+         createDiskShape() {                                     // Create disk shape ===> div as circle 
+             let newDiskShap = document.createElement('div');
+            newDiskShap.className='disk';
+            newDiskShap.id=`disk_${this.#no}`;
+            newDiskShap.textContent=this.#no;
+            newDiskShap.style.width =this.r*2 +"px";
+            newDiskShap.style.height =this.r*2 +"px";
+            visualAreaidd.appendChild(newDiskShap);
+                newDiskShap.style.left =this.x +'px';
+                newDiskShap.style.top =this.y +'px';
+         }
+         createDiskDashBoard() {                                        // Create disk input feilds  
+            let newDiskDiv = document.createElement('div');
+            let newDiskDivAttr= document.createAttribute('data-custom');
+            let newDiskDivText = document.createTextNode(Disk.diskNo);
+            newDiskDiv.setAttributeNode(newDiskDivAttr);
+            newDiskDiv.setAttribute('data-num',1);
+            newDiskDiv.className='box';
+            newDiskDiv.appendChild(newDiskDivText);
+            diskContainer.appendChild(newDiskDiv);
+
+            //Create Input for Radius 
+            let newRadiusInput = document.createElement('input');
+            newRadiusInput.type = "text";
+            newRadiusInput.className="txtRadius";
+            newRadiusInput.id=`disR_${Disk.diskNo}`;
+            newRadiusInput.value=diskRadius;
+            newDiskDiv.appendChild(newRadiusInput);
+            //Create X input
+            let newXInput = document.createElement('input');
+            newXInput.type = "text";
+            newXInput.className="txtXAxis";
+            newXInput.id=`disX_${Disk.diskNo}`;
+            newXInput.value=0;
+            newDiskDiv.appendChild(newXInput);
+         }
+
+      
+    }
+
+    
+    
+   // Submit ... to create Disk dash bord to allow user to input values 
+    document.forms[0].onsubmit= function (e) {
+        e.preventDefault();
+        if (!validate() ) return ;
+        //Remove all exsit disks 
+        document.getElementById('cmdGo').style.display ='block';
+        diskContainer.innerHTML = '';
+        visualAreaidd.innerHTML = '';
+        disksObj.clear();
+       disksObj.length >0 &&    disksObj.forEach(e => e.remove());
+       Disk.diskNo=0;
+         for(var i = 0; i < diskNumber; i++){
+            let thisDisk= new Disk(diskRadius);
+            disksObj.add(thisDisk);
+            thisDisk.createDiskDashBoard();
+       }
+     }
+
+// Visualize ... Visualize
+
+ function Visualize () {
+        visualAreaidd.innerHTML = ''; 
+       // 1-   Get X and  new Raduis  values  for all disks and store in disk object  
+        disksObj.forEach(e => {
+            e.setXandR(document.getElementById(`disX_${e.getThisDiskNO()}`).value , document.getElementById(`disR_${e.getThisDiskNO()}`).value )
+        });
+
+        ComputedDisksY ();
+        // Zoom fit real disk to Screen area
+       let pixelFactor=0;let maxR=0;           //   Change real coordinates and dimmensions to div scale  => we cal factor by divide max Y on Max height  
+       disksObj.forEach(disk =>{
+           (disk.y > pixelFactor) && ( pixelFactor=disk.y );
+           (disk.r > maxR) && ( maxR=parseFloat( disk.r) );
+           });
+           pixelFactor=pixelFactor +  maxR;
+       pixelFactor=500/pixelFactor  ;             // Reflact factor on real dimmensions
+       disksObj.forEach(disk =>{
+           disk.r = pixelFactor *disk.r;
+           disk.y = (500 - pixelFactor *disk.y) - disk.r;
+           disk.x = pixelFactor *disk.x -disk.r;
+           
+           });
+        
+        
+        disksObj.forEach(disk =>{                     // Call object Method to Draw disks
+           disk.createDiskShape();
+         });
+        
+        
+    }
+
+    // Rest ----   Validation - Restric inputs
+
+    document.getElementById('cmdGo').addEventListener("click", Visualize); 
+   
+    let restBtn=document.getElementById('btnRest');
+    restBtn.onclick= function () {
+
+        location.reload(); 
+    }
+
+    document.addEventListener('keyup', function (evt){
+        if (evt.target.classList.contains('txtRadius1') || evt.target.classList.contains ('integerValues') ) {
+           var reg = new RegExp('^[0-9]*$');
+           evt.target.value=evt.target.value.replace(/[^0-9]/g, '')  ;
+       }
+        if (evt.target.classList.contains('txtXAxis')  || evt.target.classList.contains('flotValues')  || evt.target.classList.contains('txtRadius')  ) {
+           var regexp =/^(?:(?:\d+(?:\.\d*)?|\.\d+)(?:[-+/*%]|$))+$ /;
+           evt.target.value=evt.target.value.replace(/[^.\d]/g, '')
+                                              .replace(/^(\d*\.?)|(\d*)\.?/g, "$1$2")  ;
+       }
+    });
+
+    function validate () {
+        if (!validateThisInput('disksNumber','int',50))
+            return false;
+        if (!validateThisInput('diskRadius','Float',5))
+            return false;
+        return true;
+    }
+    function validateThisInput (inputName,nType,maxVal) {
+            let valueCheked  ;
+            if (nType=='int'){
+                 valueCheked =parseInt( document.querySelector(`[name=${inputName}]`).value) || 0;
+                 diskNumber=valueCheked;
+           } else{
+                 valueCheked =parseFloat( document.querySelector(`[name=${inputName}]`).value).toFixed(2) || 0.0;
+                 diskRadius=valueCheked;
+                 }
+         if (valueCheked <=0 ||  valueCheked>maxVal  ) {
+             var errorSpan = document.getElementById("errorSpanId");
+             errorSpan.innerHTML=`Please ${inputName}  must be less than ${maxVal}`;
+            errorSpan.style.display ='block';
+            setTimeout(() => {errorSpan.style.display = 'none';}, 1900); 
+            return false;
+        }
+        return true;
+    }
+
+
+function ComputedDisksY () {
+    
+   
+     disksObj.forEach(thisDisk => {
+        // debugger;
+           let thisDiskNumber =parseInt( thisDisk.getThisDiskNO()) ;
+          let lastRaduis=parseFloat (thisDisk.r);
+            thisDisk.setXandR(document.getElementById(`disX_${thisDiskNumber}`).value , document.getElementById(`disR_${thisDiskNumber}`).value )
+             
+            if (thisDiskNumber==1)
+                {
+                    thisDisk.y=(thisDisk.r);
+                }
+                else
+                {
+                    /*
+                     * Loop all previous disks to get nearest touched disk and Stop loop 
+                      2 cases: 
+                        1st: touch with one => cal sin-1 and cos
+                        2nd:
+                            when reach the current disk: 2 cases
+                                1 - if not touch ==> have same Y
+                                2 - if touched the are at cascading vertical 
+                     */
+                      var reverse = [...disksObj].slice(0,thisDiskNumber-1) .reverse();  // Slice all disk befor current for loop one by one
+                      let shouldSkip = false;
+                      reverse.forEach(preDisk => {
+                          if (shouldSkip)  return;
+                          let sumTwoR=parseFloat(thisDisk.r) + parseFloat(preDisk.r);
+                        let dX = Math.abs(parseFloat(thisDisk.x )- parseFloat(preDisk.x));
+                         if (dX <= sumTwoR  ){  // this mean this disk touch prev one
+                           thisDisk.y =parseFloat( preDisk.y ) + sumTwoR * Math.cos(Math.asin(dX / sumTwoR));
+                          
+                           
+                           //Check if this disk still keep far away for other disks
+                           let curNo =  parseInt( preDisk.getThisDiskNO()) ;
+                           if (curNo >=2) {
+                           var checkRest = [...disksObj].slice(curNo-2,curNo-1) ;
+                            for(let key of checkRest) {
+                                         let dXcheck = Math.abs(parseFloat(thisDisk.x )- parseFloat(key.x));
+                                         let dYcheck = Math.abs(parseFloat(thisDisk.y )- parseFloat(key.y));
+                                         let sumTwoRCheck=parseFloat(thisDisk.r) + parseFloat(key.r);
+                                         // Vetagours : R2 = dx2 + dy2
+                                         if (  Math.pow(sumTwoRCheck,2) >  (Math.pow(dXcheck,2) + Math.pow(dYcheck,2)) )  {
+                                             thisDisk.y =parseFloat( key.y ) + sumTwoRCheck * Math.cos(Math.asin(dXcheck / sumTwoRCheck));
+                                         }  
+                                }
+                            }
+
+                           shouldSkip = true;
+                         }
+                        if (dX > sumTwoR && parseInt(preDisk.getThisDiskNO())==1 ){ // this mean this disk reach y=0 without any touch
+                          thisDisk.y = thisDisk.r;
+                           shouldSkip = true;
+                         }
+
+                       })
+                 }
+        });
+
+
+    
+}
+
+
+</script>
