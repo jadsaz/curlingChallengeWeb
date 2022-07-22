@@ -29,3 +29,8 @@ Output : 2 6.0 9.87298334621 13.3370849613 12.5187346573 13.3370849613
 
 ---
 # Below the mathmatics  chart I used to calculate angles (sin - cos - tan ) between each pair of circle , I add more challenge to this problem I make the radius of disks not same , thats give more complexity to solution.
+![Over view page](https://github.com/jadsaz/curlingChallengeWeb/blob/master/MathConcepts.png)
+# Below the result of this App after calculate and visualization the result.
+![Over view page](https://github.com/jadsaz/curlingChallengeWeb/blob/master/Home-page-curlingChallengeWeb.png)
+![Over view page](https://github.com/jadsaz/curlingChallengeWeb/blob/master/Home-page-curlingChallengeWeb(1).png)
+
