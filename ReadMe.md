@@ -21,7 +21,7 @@ Output
 
 Print a single line with n numbers. The i-th number denotes the y-coordinate of the center of the i-th disk. The output will be accepted if it has absolute or relative error at most 10 - 6.
 
-Namely, let's assume that your answer for a particular value of a coordinate is a and the answer of the jury is b. The checker program will consider your answer correct if   _$\ \frac {|a-b|}{max(1,b)} \leq 10^6$_ for all coordinates. 
+Namely, let's assume that your answer for a particular value of a coordinate is a and the answer of the jury is b. The checker program will consider your answer correct if   $\ \frac {|a-b|}{max(1,b)} \leq 10^6$ for all coordinates. 
 ---
 Example : Input : 6 2
 5 5 6 8 3 12
